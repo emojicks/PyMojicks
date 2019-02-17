@@ -41,3 +41,22 @@ class String(BaseBox):
 
     def eval(self, env):
         return self.value
+
+
+class Program(BaseBox):
+    def __init__(self, statement):
+        self.statements = []
+        self.statements.append(statement)
+        self.run = False
+
+    def add_statement(self, statement):
+        self.statements.insert(0, statement)
+
+    def eval(self, env):
+        result = None
+        for statement in self.statements:
+            result = statement.eval(env)
+        return result
+
+    def get_statements(self):
+        return self.statements

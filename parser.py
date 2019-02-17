@@ -1,6 +1,6 @@
 from rply import ParserGenerator
 
-from emoji_types import Number, Add, Sub, Mul, Div, String
+from emoji_types import Number, Add, Sub, Mul, Div, String, Program
 from environment import Environment
 from lexer import lexer
 from variable import Variable, Assignment
@@ -10,7 +10,7 @@ pg = ParserGenerator(
     # A list of all token names, accepted by the parser.
     ['NUMBER', 'OPEN_PARENS', 'CLOSE_PARENS',
      'PLUS', 'MINUS', 'MUL', 'DIV', 'IDENTIFIER', 'EQUAL', 'SEMICOLON',
-     'STRING', '$end', 'NEWLINE'],
+     'STRING', 'NEWLINE', '$end'],
     # A list of precedence rules with ascending precedence, to
     # disambiguate ambiguous production rules.
     precedence=[
@@ -20,14 +20,31 @@ pg = ParserGenerator(
 )
 
 
+@pg.production("main : program")
+def main_program(env, p):
+    return p[0]
+
+
+@pg.production('program : statement_full')
+def program_statement(env, p):
+    return Program(p[0])
+
+
+@pg.production('program : statement_full program')
+def program_statement_program(env, p):
+    if type(p[1]) is Program:
+        program = p[1]
+    else:
+        program = Program(p[-1])
+
+    program.add_statement(p[0])
+    return p[1]
+
+
 @pg.production('statement_full : statement NEWLINE')
 @pg.production('statement_full : statement $end')
 def statement_full(env, p):
-    try:
-        p[0].gettokentype()
-        return p[1]
-    except AttributeError:
-        return p[0]
+    return p[0]
 
 
 @pg.production('expression : STRING')
@@ -92,6 +109,6 @@ parser = pg.build()
 if __name__ == '__main__':
     _string = 'Hello 👉 "test"⚓'
 
-    l = lexer.lex(_string)
-    print(list(l))
-    parser.parse(l, env).eval(env)
+    lex = lexer.lex(_string)
+    print(list(lex))
+    parser.parse(lex, env).eval(env)
