@@ -1,6 +1,7 @@
 from rply import ParserGenerator
-from environment import Environment
+
 from emoji_types import Number, Add, Sub, Mul, Div, String
+from environment import Environment
 from lexer import lexer
 from variable import Variable, Assignment
 
@@ -8,8 +9,8 @@ env = Environment()
 pg = ParserGenerator(
     # A list of all token names, accepted by the parser.
     ['NUMBER', 'OPEN_PARENS', 'CLOSE_PARENS',
-     'PLUS', 'MINUS', 'MUL', 'DIV', 'VAR', 'IDENTIFIER', 'EQUAL', 'SEMICOLON',
-     'STRING'],
+     'PLUS', 'MINUS', 'MUL', 'DIV', 'IDENTIFIER', 'EQUAL', 'SEMICOLON',
+     'STRING', '$end', 'NEWLINE'],
     # A list of precedence rules with ascending precedence, to
     # disambiguate ambiguous production rules.
     precedence=[
@@ -17,6 +18,16 @@ pg = ParserGenerator(
         ('left', ['MUL', 'DIV'])
     ]
 )
+
+
+@pg.production('statement_full : statement NEWLINE')
+@pg.production('statement_full : statement $end')
+def statement_full(env, p):
+    try:
+        p[0].gettokentype()
+        return p[1]
+    except AttributeError:
+        return p[0]
 
 
 @pg.production('expression : STRING')
@@ -31,7 +42,7 @@ def expression_number(env, p):
     return Number(int(p[0].getstr()))
 
 
-@pg.production('statement : VAR IDENTIFIER EQUAL expression SEMICOLON')
+@pg.production('statement : IDENTIFIER EQUAL expression SEMICOLON')
 def assignment(env, p):
     return Assignment(Variable(p[0].value), p[2])
 
@@ -73,14 +84,13 @@ def error_handler(env, _token):
 parser = pg.build()
 
 
-if __name__ == '__ma__':
-    with open('yes.em') as f:
-        e = lexer.lex(f.read().encode("unicode_escape").decode("utf-8"))
-        print(list(e))
-        parser.parse(e).eval()
+#    with open('yes.em') as f:
+#        e = lexer.lex(f.read().encode("unicode_escape").decode("utf-8"))
+#        print(list(e))
+#        parser.parse(e).eval()
 
 if __name__ == '__main__':
-    _string = 'var Hello = "test";'
+    _string = 'Hello 👉 "test"⚓'
 
     l = lexer.lex(_string)
     print(list(l))

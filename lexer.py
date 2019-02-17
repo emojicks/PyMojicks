@@ -10,10 +10,9 @@ lg.add('DIV', r'/')
 lg.add('NEWLINE', r'\\n')
 lg.add('OPEN_PARENS', r'\(')
 lg.add('CLOSE_PARENS', r'\)')
-lg.add('VAR', r'var')
 lg.add('IDENTIFIER', r'[a-zA-Z_][a-zA-Z0-9_]*')
-lg.add('SEMICOLON', r';')
-lg.add('EQUAL', r'=')
+lg.add('SEMICOLON', r'⚓')
+lg.add('EQUAL', r'👉')
 lg.add('STRING', r'(""".*?""")|(".*?")|(\'.*?\')')
 
 """
