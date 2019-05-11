@@ -1,0 +1,55 @@
+start: stmt+
+
+stmt: builtin paren_expr ";"
+    | builtin "();"
+    | builtin "()" "🔁" types ";"
+    | var
+    | id
+
+var: "✏" id "👉" expr ";"
+   | "✏" id "👉" stmt
+
+builtin: "📤" -> print
+       | "📥" -> input
+
+paren_expr: "(" expr ")"
+
+expr: NUMBER -> float
+    | string -> string
+    | bool -> bool
+    | id -> variable
+
+bool: "✔" -> true
+    | "❌" -> false
+
+?sum: product
+    | sum "+" product   -> add
+    | sum "-" product   -> sub
+
+?product: atom
+        | product "*" atom  -> mul
+        | product "/" atom  -> div
+
+?atom: NUMBER           -> number
+     | "-" atom         -> neg
+     | NAME             -> var
+     | "(" sum ")"
+
+
+string: /(""".*?""")|(".*?")|(\'.*?\')/
+id: /[a-zA-Z_][a-zA-Z0-9_]*/ -> identifier
+
+types: "⛔" -> bool_type
+     | "🔢" -> float_type
+     | "🕸️" -> string_type
+
+COMMENT: /👵.*?👴/
+
+%import common.LETTER
+%import common.WS
+%ignore WS
+%ignore COMMENT
+%import common.CNAME -> NAME
+%import common.NUMBER
+%import common.WS_INLINE
+%ignore WS_INLINE
