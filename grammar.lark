@@ -1,13 +1,15 @@
-start: stmt+
+start: stmts+
 
-stmt: builtin paren_expr ";"
-    | builtin "();"
-    | builtin "()" "🔁" types ";"
-    | var
-    | id
+stmts: stmt ";"
+     | var
+     | id
+
+stmt: builtin paren_expr
+    | builtin "()"
+    | stmt "🔁" types -> convert_stmt
 
 var: "✏" id "👉" expr ";"
-   | "✏" id "👉" stmt
+   | "✏" id "👉" stmt ";"
 
 builtin: "📤" -> print
        | "📥" -> input

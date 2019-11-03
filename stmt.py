@@ -30,6 +30,16 @@ class Input(BaseStmt):
         return String(self.env, input(self.prompt.eval()))
 
 
+class Cast(BaseStmt):
+    def __init__(self, env, stmt, expr_type):
+        super().__init__(env)
+        self.stmt = stmt
+        self.expr_type = expr_type
+
+    def eval(self):
+        return self.expr_type(self.env, self.stmt.eval()).eval()
+
+
 class Assignment(BaseStmt):
     def __init__(self, env, name, value):
         super().__init__(env)
