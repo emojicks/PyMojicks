@@ -5,3 +5,10 @@
 > True
 True
 ```
+
+```js
+✏️ my_func (✒️ str) ▶️
+    📤(str);
+◀️
+my_func("hello");
+```

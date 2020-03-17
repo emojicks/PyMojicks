@@ -8,7 +8,7 @@ class BaseExpr:
         return
 
     def __repr__(self):
-        return '<{} value={}>'.format(self.type, self.eval())
+        return '<{} value={}>'.format(self.type, self.value)
 
 
 class String(BaseExpr):
@@ -16,7 +16,7 @@ class String(BaseExpr):
         super().__init__(env, value, _type="String")
 
     def eval(self):
-        return self.value
+        return str(self.value)
 
 
 class Float(BaseExpr):
@@ -24,7 +24,7 @@ class Float(BaseExpr):
         super().__init__(env, value, _type="Float")
 
     def eval(self):
-        return self.value
+        return float(self.value)
 
 
 class Bool(BaseExpr):
@@ -32,7 +32,7 @@ class Bool(BaseExpr):
         super().__init__(env, value, _type="Bool")
 
     def eval(self):
-        return self.value
+        return bool(self.value)
 
 
 class Variable(BaseExpr):
@@ -41,3 +41,20 @@ class Variable(BaseExpr):
 
     def eval(self):
         return self.env.get_variable(self.value).eval()
+
+class FuncArg(BaseExpr):
+    def __init__(self, env, name, type):
+        super().__init__(env, name , _type="FuncArg")
+        self.type = type
+        self.name = name
+
+    def eval(self):
+        return None
+
+class FuncBody(BaseExpr):
+    def __init__(self, env, stmts):
+        super().__init__(env, stmts, _type="FuncBody")
+        self.stmts = stmts
+
+    def eval(self):
+        return self.stmts
