@@ -11,18 +11,9 @@ True
 ```
 
 ```js
->>> ✏️ my_func (✒️ str) ▶️
-...    📤(str)⚓
-... ◀️
+>>> ✏️ my_func (✒️ str) ▶️ 📤(str)⚓ ◀️
 >>> my_func("hello")⚓
 hello
 ```
 
-```js
-✏️ my_func (✒️ prompt) ▶️
-    ✏ str 👉 📥(prompt) 🔁 🔢⚓
-    📤("You Wrote:")⚓
-    📤(str)⚓
-◀️
-my_func("Enter Integer: ")⚓
-```
+For more examples, check out [Examples](./examples/README.md)

@@ -5,11 +5,16 @@ class Environment:
         self.functions = {}
         self.builtins = {}
 
-        from .builtin import BUILTINS
+        if parent:
+            self.variables.update(parent.variables)
+            self.functions.update(parent.functions)
+            self.builtins = parent.builtins
+        else:
+            from .builtin import BUILTINS
 
-        for b in BUILTINS:
-            b_called = b()
-            self.builtins[b_called.name] = b_called
+            for b in BUILTINS:
+                b_called = b()
+                self.builtins[b_called.name] = b_called
 
     def add_variable(self, name, value):
         self.variables[name] = value

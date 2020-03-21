@@ -1,4 +1,4 @@
-from .expr import String
+from .expr import String, Bool
 from .environment import Environment
 
 
@@ -28,6 +28,7 @@ class Assignment(BaseStmt):
             v = self.value.eval(env)
         else:
             v = self.value
+
         return env.add_variable(self.name, v)
 
 class Function(BaseStmt):
@@ -59,3 +60,14 @@ class FunctionCall(BaseStmt):
     
     def eval(self, env):
         env.get_function(self.name).exec(self.args, env)
+
+
+class Compare(BaseStmt):
+    def __init__(self, attr, left, right):
+        self.attr = attr
+        self.left = left
+        self.right = right
+
+    def eval(self, env):
+        result = getattr(self.left.eval(env), self.attr)(self.right.eval(env))
+        return result

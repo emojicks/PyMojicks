@@ -6,6 +6,24 @@ class BaseExpr:
     def eval(self, env):
         return
 
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.value == other.value
+
+    def __gt__(self, other):
+        return isinstance(other, self.__class__) and self.value > other.value
+    
+    def __lt__(self, other):
+        return isinstance(other, self.__class__) and self.value < other.value
+
+    def __ne__(self, other):
+        return isinstance(other, self.__class__) and self.value != other.value
+
+    def __ge__(self, other):
+        return isinstance(other, self.__class__) and self.value >= other.value
+
+    def __le__(self, other):
+        return isinstance(other, self.__class__) and self.value <= other.value
+
     def __repr__(self):
         return '<{} value={}>'.format(self.type, self.value)
 
@@ -50,10 +68,10 @@ class FuncArg(BaseExpr):
     def eval(self, env):
         return
 
-class FuncBody(BaseExpr):
+class Body(BaseExpr):
     def __init__(self, stmts):
-        super().__init__(stmts, _type="FuncBody")
+        super().__init__(stmts, _type="Body")
         self.stmts = stmts
 
     def eval(self, env):
-        return self.instructions
+        return self.stmts
