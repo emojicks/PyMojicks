@@ -1,19 +1,19 @@
+from pathlib import Path
 from lark import Lark, Transformer
-from traceback import print_exc
-from stmt import *
-from expr import *
-from environment import Environment, Program
 
-parser = Lark.open('pymojicks.lark')
-env = Environment()
+from .stmt import *
+from .expr import *
+from .builtin import GlobalFunctionCall
+from .environment import Environment, Program
+
+grammar = Path(__file__).parent.joinpath('pymojicks.lark')
+parser = Lark.open(grammar)
+MAIN_ENVIRONMENT = Environment()
+
 
 class PymojicksTransformer(Transformer):
     def start(self, items):
-        return Program(env, items)
-
-    def print(self, items):
-        (items,) = items
-        return Print(env, items)
+        return Program(MAIN_ENVIRONMENT, items)
 
     def paren_expr(self, items):
         if len(items) > 0:
@@ -30,13 +30,25 @@ class PymojicksTransformer(Transformer):
         (items,) = items
         return items
 
+    def builtin(self, items):
+        (name, items) = items
+        if not isinstance(items, list):
+            items = [items]
+
+        return GlobalFunctionCall(name, items)
+
+    def EMOJI(self, items):
+        (items,) = items
+
+        return items
+
     def variable(self, items):
         (items,) = items
-        return Variable(env, items)
+        return Variable(items)
 
     def convert_stmt(self, items):
         (stmt, conv_type) = items
-        return Cast(env, stmt, conv_type)
+        return Cast(stmt, conv_type)
         
     def bool_type(self, items):
         return Bool
@@ -53,17 +65,17 @@ class PymojicksTransformer(Transformer):
 
     def float(self, items):
         (items,) = items
-        return Float(env, items)
+        return Float(items)
 
     def true(self, items):
-        return Bool(env, True)
+        return Bool(True)
 
     def false(self, items):
-        return Bool(env, False)
+        return Bool(False)
 
     def var(self, items):
         (name, items) = items
-        return Assignment(env, name, items)
+        return Assignment(name, items)
 
     def stmts(self, items):
         (items,) = items
@@ -73,59 +85,32 @@ class PymojicksTransformer(Transformer):
         (items,) = items
         return items
 
-    def input(self, items):
-        (items,) = items
-        return Input(env, items)
-
     def string(self, items):
         (items,) = items
-        return String(env, items[1:-1])
+        return String(items[1:-1])
 
     def func_arg(self, items):
         (type, name) = items
-        return FuncArg(env, name, type)
+        return FuncArg(name, type)
 
     def func_args(self, items):
         return list(items)
 
     def func_body(self, items):
-        return FuncBody(env, items)
+        return FuncBody(items)
 
     def function(self, items):
         (name, args, body) = items
-        return Function(env, name, args, body)
+        return Function(name, args, body)
 
     def function_call(self, items):
         (name, items) = items
         if not isinstance(items, list):
             items = [items]
 
-        return FunctionCall(env, name, items)
-
-    def exit(self, items):
-        return Exit(env, Float(env, -1))
-
+        return FunctionCall(name, items)
 
 def run(code):
     tree = parser.parse(code)
-    inst = PymojicksTransformer().transform(tree)
-    inst.eval()
-
-def main():
-    while True:
-        code = input('>>> ')
-        try:
-            run(code)
-        except Exception as e:
-            print_exc()
-
-
-
-if __name__ == '__main__':
-    main()
-
-# ✏️ my_func (✒️ str, 🔢 times) ▶️
-#    📤(str);
-#    🔚();
-# ◀️
-# my_func("hello");
+    program = PymojicksTransformer().transform(tree)
+    program.run()

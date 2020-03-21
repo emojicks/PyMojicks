@@ -1,14 +1,28 @@
 # PyMojicks
 
+The Official Emojicks Interpreter for Python.
+
+## Examples
+
 ```js
->>> ✏ yeet 👉 📥("> ") 🔁 ⛔; 📤(yeet); 👵 This is a comment 👴
-> True
+>>> ✏ in 👉 📥("> ") 🔁 🔢⚓ 📤(in)⚓ 👵 This is a comment 👴
+> 5
 True
 ```
 
 ```js
-✏️ my_func (✒️ str) ▶️
-    📤(str);
+>>> ✏️ my_func (✒️ str) ▶️
+...    📤(str)⚓
+... ◀️
+>>> my_func("hello")⚓
+hello
+```
+
+```js
+✏️ my_func (✒️ prompt) ▶️
+    ✏ str 👉 📥(prompt) 🔁 🔢⚓
+    📤("You Wrote:")⚓
+    📤(str)⚓
 ◀️
-my_func("hello");
+my_func("Enter Integer: ")⚓
 ```

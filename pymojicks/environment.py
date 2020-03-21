@@ -1,7 +1,15 @@
 class Environment:
-    def __init__(self):
+    def __init__(self, *, parent=None):
+        self.parent = parent
         self.variables = {}
         self.functions = {}
+        self.builtins = {}
+
+        from .builtin import BUILTINS
+
+        for b in BUILTINS:
+            b_called = b()
+            self.builtins[b_called.name] = b_called
 
     def add_variable(self, name, value):
         self.variables[name] = value
@@ -15,11 +23,17 @@ class Environment:
     def get_function(self, name):
         return self.functions[name]
 
+    def add_builtin(self, name, func):
+        self.builtins[name] = func
+
+    def get_builtin(self, name):
+        return self.builtins[name]
+
 class Program:
     def __init__(self, env, instructions):
         self.env = env
         self.instructions = instructions
 
-    def eval(self):
+    def run(self):
         for instruction in self.instructions:
-            instruction.eval()
+            instruction.eval(self.env)

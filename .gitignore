@@ -1,4 +1,4 @@
-\attempts
-\venv
-\.idea
-\__pycache__
+venv/
+.idea/
+__pycache__/
+*.egg-info
