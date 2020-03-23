@@ -63,6 +63,9 @@ class PymojicksTransformer(Transformer):
         
     def bool_type(self, items):
         return Bool
+
+    def int_type(self, items):
+        return Number
     
     def float_type(self, items):
         return Float
@@ -75,8 +78,10 @@ class PymojicksTransformer(Transformer):
         return items
 
     def float(self, items):
-        (items,) = items
         return Float(items)
+
+    def number(self, items):
+        return Number(items)
 
     def true(self, items):
         return Bool(True)
@@ -85,7 +90,11 @@ class PymojicksTransformer(Transformer):
         return Bool(False)
 
     def var(self, items):
-        (name, items) = items
+        if isinstance(items[0], str):
+            (name, items) = items
+        else:
+            (items, name) = items
+
         return Assignment(name, items)
 
     def stmts(self, items):
@@ -98,7 +107,7 @@ class PymojicksTransformer(Transformer):
 
     def string(self, items):
         (items,) = items
-        return String(items[1:-1])
+        return String(items[2:-2])
 
     def func_arg(self, items):
         (type, name) = items
@@ -136,7 +145,7 @@ class PymojicksTransformer(Transformer):
         (body,) = items
         return Else(body)
 
-    def if_body(self, items):
+    def generic_body(self, items):
         return Body(items)
 
     def compare_statement(self, items):
@@ -170,6 +179,14 @@ class PymojicksTransformer(Transformer):
     def comparable(self, items):
         (items,) = items
         return items
+
+    def for_loop(self, items):
+        (index, variable, body) = items
+        return For(index, variable, body)
+
+    def while_loop(self, items):
+        (compare, body) = items
+        return While(compare, body)
 
 
 def run(code):

@@ -21,7 +21,7 @@ class GlobalFunctionCall(FunctionCall):
 
 class Print(GlobalFunction):
     def __init__(self):
-        super().__init__('📤', [FuncArg('text', String)])
+        super().__init__('🖨', [FuncArg('text', String)])
 
     def exec(self, args, env):
         processed_args = []
@@ -33,7 +33,7 @@ class Print(GlobalFunction):
 
 class Input(GlobalFunction):
     def __init__(self):
-        super().__init__('📥', [FuncArg('prompt', String)])
+        super().__init__('🎙', [FuncArg('prompt', String)])
 
     def exec(self, args, env):
         prompt = args[0]

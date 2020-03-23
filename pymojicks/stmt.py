@@ -71,3 +71,30 @@ class Compare(BaseStmt):
     def eval(self, env):
         result = getattr(self.left.eval(env), self.attr)(self.right.eval(env))
         return result
+
+
+class For(BaseStmt):
+    def __init__(self, index, iterable, body):
+        self.index = index
+        self.iterable = iterable
+        self.body = body
+
+    def eval(self, env):
+        for_env = Environment(parent=env)
+
+        for i in self.iterable.iter(env):
+            Assignment(self.index, i).eval(for_env)
+
+            for stmt in self.body.eval(for_env):
+                stmt.eval(for_env)
+
+
+class While(BaseStmt):
+    def __init__(self, compare, body):
+        self.compare = compare
+        self.body = body
+
+    def eval(self, env):
+        while self.compare.eval(env):
+            for stmt in self.body.eval(env):
+                stmt.eval(env)

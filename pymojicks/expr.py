@@ -35,10 +35,36 @@ class String(BaseExpr):
     def eval(self, env):
         return str(self.value)
 
+    def iter(self, env):
+        return [String(s) for s in self.eval(env)]
+
+NUMBER_TRANSLATE = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+class Number(BaseExpr):
+    def __init__(self, value):
+        if isinstance(value, list):
+            actual_value = ''
+            for number in value:
+                actual_value += str(NUMBER_TRANSLATE.index(number.data))
+            actual_value = String(actual_value)
+        else:
+            actual_value = value
+
+        super().__init__(actual_value, _type="Number")
+
+    def eval(self, env):
+        return int(self.value.eval(env))
 
 class Float(BaseExpr):
     def __init__(self, value):
-        super().__init__(value, _type="Float")
+        actual_value = ''
+        for number in value:
+            if number.value != 'decimal':
+                actual_value += str(NUMBER_TRANSLATE.index(number.data))
+            else:
+                actual_value += '.'
+
+        super().__init__(String(value), _type="Float")
 
     def eval(self, env):
         return float(self.value.eval(env))
@@ -49,7 +75,7 @@ class Bool(BaseExpr):
         super().__init__(value, _type="Bool")
 
     def eval(self, env):
-        return bool(self.value.eval(env))
+        return bool(self.value)
 
 
 class Variable(BaseExpr):
@@ -58,6 +84,9 @@ class Variable(BaseExpr):
 
     def eval(self, env):
         return env.get_variable(self.value.value).eval(env)
+
+    def iter(self, env):
+        return env.get_variable(self.value.value).iter(env)
 
 class FuncArg(BaseExpr):
     def __init__(self, name, type):
